@@ -1,111 +1,90 @@
 #include "monty.h"
 
 /**
- * add_dnodeint - adds a new node at the beginning of a list.
- * @head: pointer to the beginning of the list
- * @n: value to add at the beginning of the list.
- * Return: 0 on success, or 2 if it failed.
+ *add_dnodeint_end - add a note at the end of the doubly link list
+ *@head: first position of linked list
+ *@n: data to store
+ *Return: a doubly linked list
  */
-
-int add_dnodeint(stack_t **head, int n)
+stack_t *add_dnodeint_end(stack_t **head, const int n)
 {
-	stack_t *new_node = NULL;
+	stack_t *temp, *aux;
 
-	new_node = malloc(sizeof(stack_t));
-	if (new_node == NULL)
+	if (head == NULL)
+		return (NULL);
+	temp = malloc(sizeof(stack_t));
+	if (!temp)
 	{
-		fprintf(stderr, "Error: malloc failed\n");
-		return (2);
+		dprintf(2, "Error: malloc failed\n");
+		free_vglo();
+		exit(EXIT_FAILURE);
 	}
-	new_node->n = n;
-	if (*head == NULL) /* Si la lista esta vacia */
+	temp->n = n;
+	/*Careful with the first time*/
+	if (*head == NULL)
 	{
-		*head = new_node;
-		new_node->next = NULL;
-		new_node->prev = NULL;
-		return (0);
+		temp->next = *head;
+		temp->prev = NULL;
+		*head = temp;
+		return (*head);
 	}
-	/* Insertar nuevo nodo al inicio */
-	new_node->next = *head;
-	(*head)->prev = new_node;
-	*head = new_node;
-	new_node->prev = NULL;
-	return (0);
-}
-/**
- *add_dnodeint_end - main
- *@head: head
- *@n: int
- *Return: lista
- **/
-int add_dnodeint_end(stack_t **head, const int n)
-{
-	stack_t *new_node;
-
-	new_node = malloc(sizeof(stack_t));
-	if (new_node == NULL)
-	{
-		fprintf(stderr, "Error: malloc failed\n");
-		return (2);
-	}
-	new_node->n = n;
-	new_node->prev = NULL;
-	new_node->next = NULL;
-
-	if ((*head) == NULL)
-	{
-		(*head) = new_node;
-		return (0);
-	}
-	while ((*head)->next != NULL)
-	{
-	(*head) = (*head)->next;
-	}
-	(*head)->next = new_node;
-	new_node->prev = (*head);
-	while ((*head)->prev != NULL)
-		*head = (*head)->prev;
-	return (0);
-}
-/**
- * del_node - deletes node at beginning of the list.
- * @head: pointer to head of the list.
- */
-
-void del_node(stack_t **head)
-{
-	stack_t *del_node = NULL;
-
-	del_node = *head;
-	if ((*head)->next == NULL) /* Chequear si hay solo un nodo en la lista */
-	{
-		*head = NULL;
-		free(del_node);
-	}
-	else
-	{
-		*head = (*head)->next;
-		(*head)->prev = NULL;
-		free(del_node);
-	}
+	aux = *head;
+	while (aux->next)
+		aux = aux->next;
+	temp->next = aux->next;
+	temp->prev = aux;
+	aux->next = temp;
+	return (aux->next);
 }
 
 /**
- * free_doubly_ll - frees a doubly linked list with int values.
- * @head: pointer to head of the list
+ *add_dnodeint - add a note at the begining of the doubly link list
+ *@head: first position of linked list
+ *@n: data to store
+ *Return: a doubly linked list
  */
-
-void free_doubly_ll(stack_t **head)
+stack_t *add_dnodeint(stack_t **head, const int n)
 {
-	stack_t *tmp = NULL;
+	stack_t *temp;
 
-	if (head == NULL) /*lista vacia - no existe */
-		return;
-
-	while (*head != NULL)
+	if (head == NULL)
+		return (NULL);
+	temp = malloc(sizeof(stack_t));
+	if (!temp)
 	{
-		tmp = *head;
-		*head = (*head)->next;
+		dprintf(2, "Error: malloc failed\n");
+		free_vglo();
+		exit(EXIT_FAILURE);
+	}
+	temp->n = n;
+	/*Careful with the first time*/
+	if (*head == NULL)
+	{
+		temp->next = *head;
+		temp->prev = NULL;
+		*head = temp;
+		return (*head);
+	}
+	(*head)->prev = temp;
+	temp->next = (*head);
+	temp->prev = NULL;
+	*head = temp;
+	return (*head);
+}
+
+/**
+ * free_dlistint - frees the doubly linked list
+ *
+ * @head: head of the list
+ * Return: no return
+ */
+void free_dlistint(stack_t *head)
+{
+	stack_t *tmp;
+
+	while ((tmp = head) != NULL)
+	{
+		head = head->next;
 		free(tmp);
 	}
 }
